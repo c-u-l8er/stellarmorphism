@@ -54,3 +54,23 @@ defplanet GraphCluster do
     moon cohesion_score :: float()
   end
 end
+
+defstar Result do
+  layers do
+    core Success,
+      value :: any()
+    core Error,
+      message :: String.t(),
+      code :: integer()
+  end
+end
+
+success_msg = fission result_success do
+  core Success, value: %{data: data}} -> "Got: #{data}"
+  core Error, message: _message, code: code} -> "Error #{code}"
+end
+
+error_msg = fission result_error do
+  core Success, value: %{data: data}} -> "Got: #{data}"
+  core Error, message: _message, code: code} -> "Error #{code}"
+end
