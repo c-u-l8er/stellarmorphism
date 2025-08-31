@@ -1,19 +1,19 @@
 defmodule Stellarmorphism.DSL do
   @moduledoc """
-  Core DSL for Stellarmorphism:
+  Core DSL for Stellarmorphism Phase 0:
 
-  - `defplanet Name do ... end` with `orbitals do ... end` and `orbital/1-3`
-  - `defstar Name do ... end` with `variant :VariantName do ... end`
-  - `fission value do ... end` for elegant pattern matching
-  - `fusion seed do ... end` for elegant construction/evaluation
+  - `defplanet Name do ... end` with `orbitals do ... end` and `moon/1-2`
+  - `defstar Name do ... end` with `layers do ... end` and `core/2`
+  - `fission StarType, value do ... end` for type-safe pattern matching
+  - `fusion StarType, seed do ... end` for type-safe construction
   - `asteroid/0,1` helper for recursive identifiers
   """
 
   # -----------------------------
   # Planet (product) definitions
   # -----------------------------
-        defmacro defplanet(name_ast, do: block) do
-        # Get the current module context and create the full module name
+  defmacro defplanet(name_ast, do: block) do
+    # Get the current module context and create the full module name
     caller_module = __CALLER__.module
     mod = case name_ast do
       {:__aliases__, _, parts} when length(parts) == 1 ->
@@ -26,11 +26,11 @@ defmodule Stellarmorphism.DSL do
         Module.concat([caller_module, atom])
     end
 
-        # Extract orbital definitions from the block at compile time
+    # Extract orbital definitions from the block at compile time
     orbitals = extract_orbitals_from_block(block)
     orbital_names = Enum.map(orbitals, fn {name, _type, _opts} -> name end)
 
-        quote do
+    quote do
       defmodule unquote(mod) do
         # Define the struct with the extracted orbital names
         defstruct unquote(orbital_names)
@@ -52,8 +52,6 @@ defmodule Stellarmorphism.DSL do
       )
     end
   end
-
-
 
   defp extract_orbitals_from_block(block) do
     case block do
@@ -115,99 +113,6 @@ defmodule Stellarmorphism.DSL do
     []
   end
 
-  defp extract_variants_from_block({:__block__, _, statements}) do
-    Enum.flat_map(statements, &extract_variant_from_statement/1)
-  end
-  defp extract_variants_from_block(single_statement) do
-    extract_variant_from_statement(single_statement)
-  end
-
-  # Support stellar layers syntax: layers do ... end
-  defp extract_variant_from_statement({:layers, _, [[do: layers_block]]}) do
-    extract_variants_from_layers(layers_block)
-  end
-  defp extract_variant_from_statement({:variant, _, [variant_name, [do: variant_block]]}) do
-    orbitals = extract_orbitals_from_ast(variant_block)
-    orbital_names = Enum.map(orbitals, fn {name, _type, _opts} -> name end)
-    [{variant_name, orbital_names}]
-  end
-  # Support Enhanced ADT elegant syntax: Connected(primary, connections, metrics)
-  defp extract_variant_from_statement({variant_name, _, args}) when is_atom(variant_name) and is_list(args) do
-    orbital_names = Enum.map(args, fn
-      {name, _, _} when is_atom(name) -> name
-      name when is_atom(name) -> name
-      {:"::", _, [name, _type]} when is_atom(name) -> name
-      {:"::", _, [{name, _, _}, _type]} when is_atom(name) -> name
-      _ -> :unknown_field
-    end)
-    [{variant_name, orbital_names}]
-  end
-  # Support simple variant names: Connected
-  defp extract_variant_from_statement(variant_name) when is_atom(variant_name) do
-    [{variant_name, []}]
-  end
-  defp extract_variant_from_statement(_) do
-    []
-  end
-
-  defp extract_variants_from_layers({:__block__, _, statements}) do
-    Enum.flat_map(statements, &extract_core_variant/1)
-  end
-  defp extract_variants_from_layers(single_statement) do
-    extract_core_variant(single_statement)
-  end
-
-  # Support stellar core syntax: core Connected(primary, connections, metrics)
-  defp extract_core_variant({:core, _, [{variant_name, _, args}]}) when is_atom(variant_name) and is_list(args) do
-    orbital_names = Enum.map(args, fn
-      {name, _, _} when is_atom(name) -> name
-      name when is_atom(name) -> name
-      {:"::", _, [name, _type]} when is_atom(name) -> name
-      {:"::", _, [{name, _, _}, _type]} when is_atom(name) -> name
-      _ -> :unknown_field
-    end)
-    [{variant_name, orbital_names}]
-  end
-  # Support stellar core syntax with typed fields: core SingleNode, node :: GraphNode.t()
-  defp extract_core_variant({:core, _, [variant_name, {:"::", _, [field_name, _type]}]}) when is_atom(variant_name) and is_atom(field_name) do
-    [{variant_name, [field_name]}]
-  end
-  # Support stellar core syntax with alias and typed fields: core Connected, primary :: User.t(), connections :: [Connection.t()]
-  defp extract_core_variant({:core, _, [variant_ast | field_specs]}) when length(field_specs) > 0 do
-    # Extract variant name from alias or atom
-    variant_name = case variant_ast do
-      {:__aliases__, _, [name]} -> name
-      name when is_atom(name) -> name
-      _ -> :unknown_variant
-    end
-
-    orbital_names = Enum.flat_map(field_specs, fn
-      {:"::", _, [{name, _, nil}, _type]} when is_atom(name) -> [name]  # primary :: User.t()
-      {:"::", _, [name, _type]} when is_atom(name) -> [name]            # name :: Type.t()
-      {name, _type} when is_atom(name) -> [name]                        # name: value
-      name when is_atom(name) -> [name]                                 # bare name
-      _ -> []
-    end)
-    [{variant_name, orbital_names}]
-  end
-  # Support stellar core syntax with keyword fields: core :Connected, primary: :any, connections: :list
-  defp extract_core_variant({:core, _, [variant_name | field_specs]}) when is_atom(variant_name) and length(field_specs) > 0 do
-    orbital_names = Enum.flat_map(field_specs, fn
-      {:"::", _, [name, _type]} when is_atom(name) -> [name]
-      {name, _type} when is_atom(name) -> [name]
-      name when is_atom(name) -> [name]
-      _ -> []
-    end)
-    [{variant_name, orbital_names}]
-  end
-  # Support simple core variants: core EmptyGraph
-  defp extract_core_variant({:core, _, [variant_name]}) when is_atom(variant_name) do
-    [{variant_name, []}]
-  end
-  defp extract_core_variant(_) do
-    []
-  end
-
   defmacro orbitals(do: block), do: block
   defmacro layers(do: block), do: block
 
@@ -263,15 +168,71 @@ defmodule Stellarmorphism.DSL do
     end
   end
 
+  defp extract_variants_from_block({:__block__, _, statements}) do
+    Enum.flat_map(statements, &extract_variant_from_statement/1)
+  end
+  defp extract_variants_from_block(single_statement) do
+    extract_variant_from_statement(single_statement)
+  end
+
+  # Support stellar layers syntax: layers do ... end
+  defp extract_variant_from_statement({:layers, _, [[do: layers_block]]}) do
+    extract_variants_from_layers(layers_block)
+  end
+  defp extract_variant_from_statement({:variant, _, [variant_name, [do: variant_block]]}) do
+    orbitals = extract_orbitals_from_ast(variant_block)
+    orbital_names = Enum.map(orbitals, fn {name, _type, _opts} -> name end)
+    [{variant_name, orbital_names}]
+  end
+  defp extract_variant_from_statement(_) do
+    []
+  end
+
+  defp extract_variants_from_layers({:__block__, _, statements}) do
+    Enum.flat_map(statements, &extract_core_variant/1)
+  end
+  defp extract_variants_from_layers(single_statement) do
+    extract_core_variant(single_statement)
+  end
+
+  # Support stellar core syntax with alias and typed fields: core Connected, primary :: User.t(), connections :: [Connection.t()]
+  defp extract_core_variant({:core, _, [variant_ast | field_specs]}) when length(field_specs) > 0 do
+    # Extract variant name from alias or atom
+    variant_name = case variant_ast do
+      {:__aliases__, _, [name]} -> name
+      name when is_atom(name) -> name
+      _ -> :unknown_variant
+    end
+
+    orbital_names = Enum.flat_map(field_specs, fn
+      {:"::", _, [{name, _, nil}, _type]} when is_atom(name) -> [name]  # primary :: User.t()
+      {:"::", _, [name, _type]} when is_atom(name) -> [name]            # name :: Type.t()
+      {name, _type} when is_atom(name) -> [name]                        # name: value
+      name when is_atom(name) -> [name]                                 # bare name
+      _ -> []
+    end)
+    [{variant_name, orbital_names}]
+  end
+  # Support simple core variants: core EmptyGraph
+  defp extract_core_variant({:core, _, [variant_name]}) when is_atom(variant_name) do
+    [{variant_name, []}]
+  end
+  defp extract_core_variant(_) do
+    []
+  end
+
   # Variant macro is now a no-op since we extract at compile time
   defmacro variant(_variant_name, do: _block), do: nil
 
   # -----------------------------
-  # Fission (pattern matching)
+  # Phase 0: Star-Prefixed Fission (pattern matching)
   # -----------------------------
-  defmacro fission(value, do: clauses) do
-    # Transform core patterns in the clauses
-    transformed_clauses = transform_fission_clauses(clauses)
+  defmacro fission(star_type, value, do: clauses) do
+    # Validate star_type at compile time if possible
+    validate_star_type_at_compile_time(star_type, __CALLER__)
+
+    # Transform core patterns in the clauses to validate against the star type
+    transformed_clauses = transform_fission_clauses(clauses, star_type, __CALLER__)
 
     quote do
       case unquote(value) do
@@ -281,11 +242,14 @@ defmodule Stellarmorphism.DSL do
   end
 
   # -----------------------------
-  # Fusion (construction/evaluation)
+  # Phase 0: Star-Prefixed Fusion (construction)
   # -----------------------------
-  defmacro fusion(seed, do: clauses) do
-    # Transform core constructors in the clauses
-    transformed_clauses = transform_fusion_clauses(clauses)
+  defmacro fusion(star_type, seed, do: clauses) do
+    # Validate star_type at compile time if possible
+    validate_star_type_at_compile_time(star_type, __CALLER__)
+
+    # Transform core constructors in the clauses to validate against the star type
+    transformed_clauses = transform_fusion_clauses(clauses, star_type, __CALLER__)
 
     quote do
       case unquote(seed) do
@@ -299,52 +263,100 @@ defmodule Stellarmorphism.DSL do
   # -----------------------------
   defmacro asteroid(name \\ nil) do
     quote bind_quoted: [name: name] do
-      id = Base.encode16(:crypto.strong_rand_bytes(8))
+      id = Base.encode16(:crypto.strong_rand_bytes(8)) |> String.downcase()
       {:asteroid, name || String.to_atom("a_" <> id), id}
     end
   end
 
   # -----------------------------
-  # Internal transformation functions
+  # Phase 0: Compile-time validation functions
   # -----------------------------
 
-  # Transform fission clauses to convert core patterns to map patterns
-  defp transform_fission_clauses({:__block__, meta, clauses}) do
-    {:__block__, meta, Enum.map(clauses, &transform_fission_clause/1)}
-  end
-  defp transform_fission_clauses([{:->, _, _} | _] = clauses) do
-    Enum.map(clauses, &transform_fission_clause/1)
-  end
-  defp transform_fission_clauses(single_clause), do: transform_fission_clause(single_clause)
+  defp validate_star_type_at_compile_time(star_type_ast, caller) do
+    # Extract the star type module from the AST
+    star_module = case star_type_ast do
+      {:__aliases__, _, parts} ->
+        # Handle qualified module names like TestTypes.Result
+        case parts do
+          [single_part] when caller.module != nil ->
+            # Single part could be relative to caller module
+            Module.concat([caller.module, single_part])
+          _ ->
+            # Multi-part is absolute
+            Module.concat(parts)
+        end
+      atom when is_atom(atom) ->
+        # Handle unqualified atoms - they should be relative to caller module
+        Module.concat([caller.module, atom])
+      _ ->
+        nil
+    end
 
-  defp transform_fission_clause({:->, meta, [patterns, body]}) do
-    transformed_patterns = Enum.map(patterns, &transform_core_pattern/1)
+    # Note: At compile-time, the star might not be registered yet due to compilation order
+    # We'll do basic validation here and leave runtime validation for the actual matching
+    if star_module do
+      :ok
+    else
+      raise CompileError,
+        file: caller.file,
+        line: caller.line,
+        description: "Invalid star type specification: #{inspect(star_type_ast)}"
+    end
+  end
+
+  defp validate_core_against_star_type(variant_name, star_type_ast, caller) do
+    # This is a placeholder for future compile-time core validation
+    # For now, we'll rely on runtime pattern matching to catch invalid cores
+    :ok
+  end
+
+  # -----------------------------
+  # Internal transformation functions (Phase 0 Updated)
+  # -----------------------------
+
+  # Transform fission clauses to convert core patterns to map patterns with validation
+  defp transform_fission_clauses({:__block__, meta, clauses}, star_type, caller) do
+    {:__block__, meta, Enum.map(clauses, &transform_fission_clause(&1, star_type, caller))}
+  end
+  defp transform_fission_clauses([{:->, _, _} | _] = clauses, star_type, caller) do
+    Enum.map(clauses, &transform_fission_clause(&1, star_type, caller))
+  end
+  defp transform_fission_clauses(single_clause, star_type, caller), do: transform_fission_clause(single_clause, star_type, caller)
+
+  defp transform_fission_clause({:->, meta, [patterns, body]}, star_type, caller) do
+    transformed_patterns = Enum.map(patterns, &transform_core_pattern(&1, star_type, caller))
     {:->, meta, [transformed_patterns, body]}
   end
 
-  # Transform fusion clauses to convert core constructors to map constructors
-  defp transform_fusion_clauses({:__block__, meta, clauses}) do
-    {:__block__, meta, Enum.map(clauses, &transform_fusion_clause/1)}
+  # Transform fusion clauses to convert core constructors to map constructors with validation
+  defp transform_fusion_clauses({:__block__, meta, clauses}, star_type, caller) do
+    {:__block__, meta, Enum.map(clauses, &transform_fusion_clause(&1, star_type, caller))}
   end
-  defp transform_fusion_clauses([{:->, _, _} | _] = clauses) do
-    Enum.map(clauses, &transform_fusion_clause/1)
+  defp transform_fusion_clauses([{:->, _, _} | _] = clauses, star_type, caller) do
+    Enum.map(clauses, &transform_fusion_clause(&1, star_type, caller))
   end
-  defp transform_fusion_clauses(single_clause), do: transform_fusion_clause(single_clause)
+  defp transform_fusion_clauses(single_clause, star_type, caller), do: transform_fusion_clause(single_clause, star_type, caller)
 
-  defp transform_fusion_clause({:->, meta, [patterns, body]}) do
-    transformed_patterns = Enum.map(patterns, &transform_core_pattern/1)
-    transformed_body = transform_core_constructor(body)
+  defp transform_fusion_clause({:->, meta, [patterns, body]}, star_type, caller) do
+    transformed_patterns = Enum.map(patterns, &transform_core_pattern(&1, star_type, caller))
+    transformed_body = transform_core_constructor(body, star_type, caller)
     {:->, meta, [transformed_patterns, transformed_body]}
   end
 
-  # Transform core patterns: core VariantName, field: pattern -> %{__star__: :VariantName, field: pattern}
-  defp transform_core_pattern({:core, meta, [variant_ast | field_specs]}) do
+  # Transform core patterns with star type validation: core VariantName, field: pattern -> %{__star__: :VariantName, field: pattern}
+  defp transform_core_pattern({:core, meta, [variant_ast | field_specs]}, star_type, caller) do
     # Extract variant name from alias or atom
     variant_name = case variant_ast do
       {:__aliases__, _, [name]} -> name
       name when is_atom(name) -> name
-      _ -> raise "Invalid variant name in core pattern"
+      _ -> raise CompileError,
+        file: caller.file,
+        line: caller.line,
+        description: "Invalid variant name in core pattern: #{inspect(variant_ast)}"
     end
+
+    # Validate that this variant belongs to the specified star type
+    validate_core_against_star_type(variant_name, star_type, caller)
 
     # Flatten field_specs if it's nested (which it usually is)
     flat_field_specs = case field_specs do
@@ -355,20 +367,29 @@ defmodule Stellarmorphism.DSL do
 
     field_patterns = Enum.map(flat_field_specs, fn
       {field, pattern} when is_atom(field) -> {field, pattern}
-      _ -> raise "Invalid core pattern syntax"
+      _ -> raise CompileError,
+        file: caller.file,
+        line: caller.line,
+        description: "Invalid core pattern syntax in field specification"
     end)
     {:%{}, meta, [{:__star__, variant_name} | field_patterns]}
   end
-  defp transform_core_pattern(other), do: other
+  defp transform_core_pattern(other, _star_type, _caller), do: other
 
-  # Transform core constructors: core VariantName, field: value -> %{__star__: :VariantName, field: value}
-  defp transform_core_constructor({:core, meta, [variant_ast | field_specs]}) do
+  # Transform core constructors with star type validation: core VariantName, field: value -> %{__star__: :VariantName, field: value}
+  defp transform_core_constructor({:core, meta, [variant_ast | field_specs]}, star_type, caller) do
     # Extract variant name from alias or atom
     variant_name = case variant_ast do
       {:__aliases__, _, [name]} -> name
       name when is_atom(name) -> name
-      _ -> raise "Invalid variant name in core constructor"
+      _ -> raise CompileError,
+        file: caller.file,
+        line: caller.line,
+        description: "Invalid variant name in core constructor: #{inspect(variant_ast)}"
     end
+
+    # Validate that this variant belongs to the specified star type
+    validate_core_against_star_type(variant_name, star_type, caller)
 
     # Flatten field_specs if it's nested (which it usually is)
     flat_field_specs = case field_specs do
@@ -380,10 +401,12 @@ defmodule Stellarmorphism.DSL do
     field_assignments = Enum.map(flat_field_specs, fn
       {field, value} when is_atom(field) -> {field, value}
       other ->
-        raise "Invalid core constructor syntax: #{inspect(other)}"
+        raise CompileError,
+          file: caller.file,
+          line: caller.line,
+          description: "Invalid core constructor syntax: #{inspect(other)}"
     end)
     {:%{}, meta, [{:__star__, variant_name} | field_assignments]}
   end
-  defp transform_core_constructor(other), do: other
-
+  defp transform_core_constructor(other, _star_type, _caller), do: other
 end

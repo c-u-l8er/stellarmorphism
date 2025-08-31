@@ -1,0 +1,132 @@
+# Elixir/Erlang specific
+_build/
+deps/
+*.ez
+*.beam
+*.app
+*.app.src
+*.appup.src
+*.rel
+*.script
+*.boot
+*.config
+*.plt
+*.cover
+*.eunit
+*.ct_run
+*.ct.coverspec
+*.ct.coverdata
+*.ct.beam
+*.ct.log
+*.ct.trace
+*.ct.trace.log*
+
+# Mix artifacts
+mix.lock
+
+# Documentation
+doc/
+docs/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Coverage reports
+cover/
+*.cover
+
+# Dialyzer
+*.dialyzer_ignore.exs
+
+# Crash dumps
+erl_crash.dump
+
+# Node.js (if using any JavaScript tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if using any Python tooling)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Backup files
+*.old
+*.orig
+*.save
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.gpg
+*.asc
+*.pgp
+*.p7s
+*.p7m
+
+# Other
+*.pid
+*.seed
+*.pid.lock

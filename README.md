@@ -97,7 +97,7 @@ connections = [
 ]
 
 # Fusion (elegant constructors)
-network = fusion {user, connections} do
+network = fusion Space.Types.Network, {user, connections} do
   {%User{score: score}, conns} when score > 80 ->
     core Connected, primary: user, connections: conns, metrics: %{type: "influencer"}
   
@@ -109,7 +109,7 @@ network = fusion {user, connections} do
 end
 
 # Fission (elegant pattern matching)
-analysis = fission network do
+analysis = fission Space.Types.Network, network do
   core Connected, primary: %User{name: name, score: score}, connections: conns, metrics: %{type: type} ->
     %{
       user: name,
@@ -206,7 +206,7 @@ end
 #### Fission (Pattern Matching)
 
 ```elixir
-mission_status = fission mission do
+mission_status = fission Mission, mission do
   core Planning, objectives: objectives, timeline: timeline, resources: _resources ->
     "Planning #{length(objectives)} objectives over #{timeline}"
   
@@ -221,7 +221,7 @@ mission_status = fission mission do
 end
 
 # Match on planets (structs) directly
-user_info = fission user do
+user_info = fission Space.Types.User, user do
   %User{score: score, name: name} when score > 90 ->
     "#{name} is a stellar performer!"
   
@@ -237,7 +237,7 @@ end
 
 ```elixir
 # Fusion with core syntax
-result = fusion input_data do
+result = fusion Space.Types.Result input_data do
   {:success, data} ->
     core Success, value: data
     
@@ -246,7 +246,7 @@ result = fusion input_data do
 end
 
 # Complex fusion with guards and patterns
-network_state = fusion {user, connections, metrics} do
+network_state = fusion Space.Types.Network, {user, connections, metrics} do
   {%User{score: score}, conns, %{type: type}} when score > 80 and type == "premium" ->
     core Connected, 
       primary: user, 

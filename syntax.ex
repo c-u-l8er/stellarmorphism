@@ -65,12 +65,14 @@ defstar Result do
   end
 end
 
-success_msg = fission result_success do
+result = %{__star__: :Success, value: %{data: "data"}}
+test1 = fission Result, result do
   core Success, value: %{data: data}} -> "Got: #{data}"
   core Error, message: _message, code: code} -> "Error #{code}"
 end
 
-error_msg = fission result_error do
-  core Success, value: %{data: data}} -> "Got: #{data}"
-  core Error, message: _message, code: code} -> "Error #{code}"
+continue = :success
+test2 = fusion Result, continue do
+  :success -> core Success, value: "operation completed"
+  :error -> core Error, message: "operation failed"
 end
