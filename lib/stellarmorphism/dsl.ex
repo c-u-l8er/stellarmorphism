@@ -1,55 +1,104 @@
 defmodule Stellarmorphism.DSL do
   @moduledoc """
-  Core DSL for Stellarmorphism Phase 0:
+  Core DSL for Stellarmorphism Phase 0 + Phase 1:
 
+  Phase 0 Features:
   - `defplanet Name do ... end` with `orbitals do ... end` and `moon/1-2`
   - `defstar Name do ... end` with `layers do ... end` and `core/2`
   - `fission StarType, value do ... end` for type-safe pattern matching
   - `fusion StarType, seed do ... end` for type-safe construction
   - `asteroid/0,1` helper for recursive identifiers
+
+  Phase 1 Features:
+  - Parameterized types: `defstar BinaryTree(t) do ... end`
+  - Asteroid recursion: `asteroid(BinaryTree(t))` - eager evaluation
+  - Rocket recursion: `rocket(LazyStream(t))` - lazy evaluation
+  - Enhanced constructors with type parameters and constraints
+  - Variable arguments in fusion/fission expressions
   """
+
+  alias Stellarmorphism.{Types, Constructors}
 
   # -----------------------------
   # Planet (product) definitions
   # -----------------------------
   defmacro defplanet(name_ast, do: block) do
-    # Get the current module context and create the full module name
+    # Phase 1: Extract type parameters and base module name
+    {base_name, type_params} = Types.extract_type_params(name_ast)
     caller_module = __CALLER__.module
-    mod = case name_ast do
-      {:__aliases__, _, parts} when length(parts) == 1 ->
-        # Single part alias like TestUser should be relative to caller module
-        Module.concat([caller_module | parts])
-      {:__aliases__, _, parts} ->
-        # Multi-part alias like My.Module.TestUser should be absolute
-        Module.concat(parts)
-      atom when is_atom(atom) ->
-        Module.concat([caller_module, atom])
+
+    # Create full module name
+    mod = case base_name do
+      name_parts when is_list(name_parts) ->
+        # Handle {:__aliases__, _, parts} case
+        case name_parts do
+          [single_part] ->
+            Module.concat([caller_module, single_part])
+          _ ->
+            Module.concat(name_parts)
+        end
+      name when is_atom(name) ->
+        Module.concat([caller_module, name])
+      _ ->
+        Module.concat([caller_module, :UnknownPlanet])
     end
 
     # Extract orbital definitions from the block at compile time
     orbitals = extract_orbitals_from_block(block)
     orbital_names = Enum.map(orbitals, fn {name, _type, _opts} -> name end)
+    defaults = Constructors.extract_defaults(orbitals)
 
-    quote do
-      defmodule unquote(mod) do
-        # Define the struct with the extracted orbital names
-        defstruct unquote(orbital_names)
+    if type_params == [] do
+      # Phase 0: Simple planet without parameters
+      quote do
+        defmodule unquote(mod) do
+          # Define the struct with the extracted orbital names
+          defstruct unquote(orbital_names)
 
-        @doc false
-        def __stellarmorphism__(:orbitals), do: unquote(orbital_names)
+          @doc false
+          def __stellarmorphism__(:orbitals), do: unquote(orbital_names)
 
-        @doc false
-        @spec new(map()) :: struct()
-        def new(attrs \\ %{}) do
-          struct!(__MODULE__, attrs)
+          @doc false
+          @spec new(map()) :: struct()
+          def new(attrs \\ %{}) do
+            struct!(__MODULE__, attrs)
+          end
         end
-      end
 
-      # Register planet metadata for compile-time transforms
-      Stellarmorphism.Registry.register_planet(
-        unquote(mod),
-        unquote(orbital_names)
-      )
+        # Register planet metadata for compile-time transforms
+        Stellarmorphism.Registry.register_planet(
+          unquote(mod),
+          unquote(orbital_names)
+        )
+      end
+    else
+      # Phase 1: Parameterized planet
+      quote do
+        defmodule unquote(mod) do
+          # Define the struct with the extracted orbital names
+          defstruct unquote(orbital_names)
+
+          @doc false
+          def __stellarmorphism__(:orbitals), do: unquote(orbital_names)
+
+          @doc false
+          def __stellarmorphism__(:params), do: unquote(Macro.escape(type_params))
+
+          @doc false
+          def __stellarmorphism__(:defaults), do: unquote(Macro.escape(defaults))
+
+          # Generate parameterized constructors
+          unquote(Constructors.generate_constructors(mod, type_params, orbitals, defaults))
+        end
+
+        # Register parameterized planet metadata
+        Stellarmorphism.Registry.register_parameterized_planet(
+          unquote(mod),
+          unquote(orbital_names),
+          unquote(Macro.escape(type_params)),
+          unquote(Macro.escape(defaults))
+        )
+      end
     end
   end
 
@@ -85,7 +134,10 @@ defmodule Stellarmorphism.DSL do
       name_atom when is_atom(name_atom) -> name_atom            # Direct atom like `:id`
       _ -> :unknown_field
     end
-    [{orbital_name, type, []}]
+
+    # Phase 1: Check for asteroid/rocket types
+    enhanced_type = extract_enhanced_type(type)
+    [{orbital_name, enhanced_type, []}]
   end
   defp extract_orbital_from_statement({:moon, _, [name]}) do
     # Support stellar syntax: moon name
@@ -113,6 +165,17 @@ defmodule Stellarmorphism.DSL do
     []
   end
 
+  # Phase 1: Enhanced type extraction for asteroid/rocket recursion
+  defp extract_enhanced_type({:asteroid, _, [type_expr]}) do
+    {:asteroid, type_expr}
+  end
+
+  defp extract_enhanced_type({:rocket, _, [type_expr]}) do
+    {:rocket, type_expr}
+  end
+
+  defp extract_enhanced_type(type), do: type
+
   defmacro orbitals(do: block), do: block
   defmacro layers(do: block), do: block
 
@@ -138,33 +201,71 @@ defmodule Stellarmorphism.DSL do
   # Star (sum) definitions
   # -----------------------------
   defmacro defstar(name_ast, do: block) do
-    # Get the current module context and create the full module name
+    # Phase 1: Extract type parameters and base module name
+    {base_name, type_params} = Types.extract_type_params(name_ast)
     caller_module = __CALLER__.module
-    mod = case name_ast do
-      {:__aliases__, _, parts} when length(parts) == 1 ->
-        # Single part alias like TestNetwork should be relative to caller module
-        Module.concat([caller_module | parts])
-      {:__aliases__, _, parts} ->
-        # Multi-part alias like My.Module.TestNetwork should be absolute
-        Module.concat(parts)
-      atom when is_atom(atom) ->
-        Module.concat([caller_module, atom])
+
+    # Create full module name
+    mod = case base_name do
+      name_parts when is_list(name_parts) ->
+        # Handle {:__aliases__, _, parts} case
+        case name_parts do
+          [single_part] ->
+            Module.concat([caller_module, single_part])
+          _ ->
+            Module.concat(name_parts)
+        end
+      name when is_atom(name) ->
+        Module.concat([caller_module, name])
+      _ ->
+        Module.concat([caller_module, :UnknownStar])
     end
 
     # Extract variant definitions from the block at compile time
     variants = extract_variants_from_block(block)
     variants_map = Map.new(variants)
 
-    quote do
-      defmodule unquote(mod) do
-        @doc false
-        def __stellarmorphism__(:variants), do: unquote(Macro.escape(variants_map))
-      end
+    # Phase 1: Extract defaults from variant definitions
+    variant_defaults = extract_variant_defaults(variants)
 
-      Stellarmorphism.Registry.register_star(
-        unquote(mod),
-        unquote(variants)
-      )
+    if type_params == [] do
+      # Phase 0: Simple star without parameters
+      quote do
+        defmodule unquote(mod) do
+          @doc false
+          def __stellarmorphism__(:variants), do: unquote(Macro.escape(variants_map))
+        end
+
+        Stellarmorphism.Registry.register_star(
+          unquote(mod),
+          unquote(variants)
+        )
+      end
+    else
+      # Phase 1: Parameterized star
+      quote do
+        defmodule unquote(mod) do
+          @doc false
+          def __stellarmorphism__(:variants), do: unquote(Macro.escape(variants_map))
+
+          @doc false
+          def __stellarmorphism__(:params), do: unquote(Macro.escape(type_params))
+
+          @doc false
+          def __stellarmorphism__(:defaults), do: unquote(Macro.escape(variant_defaults))
+
+          # Generate parameterized constructors for each variant
+          unquote_splicing(generate_variant_constructors(mod, type_params, variants, variant_defaults))
+        end
+
+        # Register parameterized star metadata
+        Stellarmorphism.Registry.register_parameterized_star(
+          unquote(mod),
+          unquote(variants),
+          unquote(Macro.escape(type_params)),
+          unquote(Macro.escape(variant_defaults))
+        )
+      end
     end
   end
 
@@ -221,6 +322,82 @@ defmodule Stellarmorphism.DSL do
     []
   end
 
+  # Phase 1: Extract default values from variant definitions
+  defp extract_variant_defaults(variants) do
+    Enum.reduce(variants, %{}, fn {variant_name, field_specs}, acc ->
+      defaults = extract_field_defaults(field_specs)
+      if defaults == %{} do
+        acc
+      else
+        Map.put(acc, variant_name, defaults)
+      end
+    end)
+  end
+
+  defp extract_field_defaults(field_specs) when is_list(field_specs) do
+    Enum.reduce(field_specs, %{}, fn _field_name, acc ->
+      # For now, we don't extract defaults from field specs
+      # This would be enhanced to support field-level defaults
+      acc
+    end)
+  end
+  defp extract_field_defaults(_), do: %{}
+
+  # Phase 1: Generate constructors for parameterized star variants
+  defp generate_variant_constructors(mod, type_params, variants, defaults) do
+    Enum.map(variants, fn {variant_name, field_specs} ->
+      generate_variant_constructor(mod, variant_name, field_specs, type_params, defaults)
+    end)
+  end
+
+  defp generate_variant_constructor(mod, variant_name, field_specs, type_params, defaults) do
+    param_names = Enum.map(type_params, fn {name, _constraint} -> name end)
+    _field_names = if is_list(field_specs), do: field_specs, else: []
+
+    quote do
+      @doc """
+      Creates a #{unquote(variant_name)} variant of #{unquote(mod)}.
+      """
+      def unquote(String.to_atom("new_#{variant_name}"))(unquote_splicing(param_vars(param_names)), attrs \\ %{}) do
+        # Validate type parameters
+        param_values = unquote(build_param_values(param_names))
+        constraints = unquote(Macro.escape(Enum.filter(type_params, fn {_name, constraint} -> constraint != nil end)))
+
+        case Stellarmorphism.Types.validate_constraints(param_values, constraints) do
+          :ok ->
+            base_map = %{__star__: unquote(variant_name)}
+            |> Map.merge(attrs)
+            |> apply_variant_defaults(unquote(variant_name), param_values, unquote(Macro.escape(defaults)))
+
+          {:error, msg} ->
+            raise ArgumentError, "Type constraint validation failed: #{msg}"
+        end
+      end
+    end
+  end
+
+  # Helper to generate parameter variables
+  defp param_vars(param_names) do
+    Enum.map(param_names, fn name ->
+      {name, [], nil}
+    end)
+  end
+
+  # Helper to build parameter values map
+  defp build_param_values(param_names) do
+    param_pairs = Enum.map(param_names, fn name ->
+      {name, {name, [], nil}}
+    end)
+    {:%{}, [], param_pairs}
+  end
+
+  # Runtime helper for applying variant defaults
+  def apply_variant_defaults(base_map, variant_name, param_values, all_defaults) do
+    variant_defaults = Map.get(all_defaults, variant_name, %{})
+    resolved_defaults = Types.resolve_defaults(variant_defaults, param_values)
+    Map.merge(resolved_defaults, base_map)
+  end
+
   # Variant macro is now a no-op since we extract at compile time
   defmacro variant(_variant_name, do: _block), do: nil
 
@@ -259,12 +436,49 @@ defmodule Stellarmorphism.DSL do
   end
 
   # -----------------------------
-  # Asteroid (recursive/identifier helper)
+  # Phase 1: Enhanced Recursion Macros
   # -----------------------------
-  defmacro asteroid(name \\ nil) do
+
+  # Asteroid macro header with default
+  defmacro asteroid(arg \\ nil)
+
+  # Phase 0: Legacy asteroid for backward compatibility
+  defmacro asteroid(name) when is_atom(name) or is_nil(name) do
     quote bind_quoted: [name: name] do
       id = Base.encode16(:crypto.strong_rand_bytes(8)) |> String.downcase()
       {:asteroid, name || String.to_atom("a_" <> id), id}
+    end
+  end
+
+  # Phase 1: New asteroid for eager recursion - when it's not an atom/nil
+  defmacro asteroid(type_expr) do
+    quote do
+      # Evaluate expression immediately when asteroid is created
+      unquote(type_expr)
+    end
+  end
+
+  # Phase 1: Rocket for lazy recursion
+  defmacro rocket(type_expr) do
+    quote do
+      case unquote(type_expr) do
+        func when is_function(func, 0) ->
+          # If it's already a 0-arity function, use it directly
+          {:__rocket__, func}
+        value ->
+          # Otherwise, wrap it in a function
+          {:__rocket__, fn -> value end}
+      end
+    end
+  end
+
+  # Phase 1: Launch for evaluating rockets
+  defmacro launch(rocket_value) do
+    quote do
+      case unquote(rocket_value) do
+        {:__rocket__, fun} when is_function(fun, 0) -> fun.()
+        other -> other  # Not a rocket, return as-is
+      end
     end
   end
 
@@ -304,7 +518,7 @@ defmodule Stellarmorphism.DSL do
     end
   end
 
-  defp validate_core_against_star_type(variant_name, star_type_ast, caller) do
+  defp validate_core_against_star_type(_variant_name, _star_type_ast, _caller) do
     # This is a placeholder for future compile-time core validation
     # For now, we'll rely on runtime pattern matching to catch invalid cores
     :ok
