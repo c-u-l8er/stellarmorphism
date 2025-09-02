@@ -99,14 +99,33 @@ defmodule Stellarmorphism.Types do
     end)
   end
 
-  defp validate_constraint(_value, _param, constraint) when constraint != nil do
-    # Temporary simplified validation - for now just check if constraint exists
-    # This allows tests to pass while we focus on core functionality
-    # TODO: Implement proper constraint evaluation in a future phase
-    not is_nil(constraint)
+  defp validate_constraint(value, param, constraint) when constraint != nil do
+    # Try to evaluate the constraint by substituting the parameter value
+    try do
+      # Replace the parameter variable in the constraint AST with the actual value
+      substituted_constraint = substitute_param(constraint, param, value)
+      {result, _} = Code.eval_quoted(substituted_constraint)
+
+      case result do
+        true -> true
+        false -> false
+        _ -> false
+      end
+    rescue
+      _e -> false
+    end
   end
 
   defp validate_constraint(_value, _param, nil), do: true
+
+  # Helper to substitute parameter variables with actual values in AST
+  defp substitute_param(ast, param, value) do
+    Macro.prewalk(ast, fn
+      {^param, _, nil} -> value
+      {^param, _, _ctx} -> value
+      other -> other
+    end)
+  end
 
   # -----------------------------
   # Type construction helpers

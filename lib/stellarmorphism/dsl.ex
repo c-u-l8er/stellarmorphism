@@ -187,14 +187,32 @@ defmodule Stellarmorphism.DSL do
   # Stellar syntax macros are now no-ops since we extract at compile time
   defmacro moon(_field_spec), do: nil
 
-  # Core macro for pattern matching and construction
+  # Core macro for pattern matching and construction - with no fields
+  defmacro core(variant_name) do
+    # Convert core VariantName to %{__star__: :VariantName}
+    # Ensure variant_name is properly converted to atom
+    variant_atom = case variant_name do
+      {:__aliases__, _, [name]} -> name
+      name when is_atom(name) -> name
+      _ -> variant_name
+    end
+    {:%{}, [], [{:__star__, variant_atom}]}
+  end
+
+  # Core macro for pattern matching and construction - with fields
   defmacro core(variant_name, field_specs) do
     # Convert core VariantName, field: pattern to %{__star__: :VariantName, field: pattern}
+    # Ensure variant_name is properly converted to atom
+    variant_atom = case variant_name do
+      {:__aliases__, _, [name]} -> name
+      name when is_atom(name) -> name
+      _ -> variant_name
+    end
     field_patterns = Enum.map(field_specs, fn
       {field, pattern} when is_atom(field) -> {field, pattern}
       _ -> raise "Invalid core syntax"
     end)
-    {:%{}, [], [{:__star__, variant_name} | field_patterns]}
+    {:%{}, [], [{:__star__, variant_atom} | field_patterns]}
   end
 
   # -----------------------------

@@ -63,17 +63,17 @@ defmodule StellarmorphismPhase0Test do
   use ExUnit.Case, async: true
 
   alias StellarmorphismTest.TestTypes.{User, Connection, Network, Result, ApiResponse}
-  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3, asteroid: 0, asteroid: 1]
+  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3, asteroid: 0, asteroid: 1, core: 1, core: 2]
 
   describe "Phase 0: Star-prefixed fission eliminates namespace collisions" do
     test "different star types with same core names work independently" do
       # Create test data for Result star
-      result_success = %{__star__: :Success, value: %{data: "important info"}}
-      result_error = %{__star__: :Error, message: "not found", code: 404}
+      result_success = core(Success, value: %{data: "important info"})
+      result_error = core(Error, message: "not found", code: 404)
 
       # Create test data for ApiResponse star
-      api_success = %{__star__: :Success, data: %{user: "alice"}, status: 200}
-      api_error = %{__star__: :Error, message: "unauthorized", code: 401}
+      api_success = core(Success, data: %{user: "alice"}, status: 200)
+      api_error = core(Error, message: "unauthorized", code: 401)
 
       # Phase 0: Star-prefixed fission with Result type
       success_msg = fission Result, result_success do
@@ -106,7 +106,7 @@ defmodule StellarmorphismPhase0Test do
 
     test "star-prefixed fission enforces type safety at compile time" do
       # This test shows that the user MUST specify the star type
-      result_success = %{__star__: :Success, value: "test data"}
+      result_success = core(Success, value: "test data")
 
       # This should work - star type specified
       msg = fission Result, result_success do
@@ -323,7 +323,7 @@ defmodule StellarmorphismPhase0Test do
       # Both Result and ApiResponse have Success and Error cores, but different structures
 
       # Test Result star
-      result_data = %{__star__: :Success, value: "completed successfully"}
+      result_data = core(Success, value: "completed successfully")
       result_analysis = fission Result, result_data do
         core Success, value: data -> "Result success: #{data}"
         core Error, message: msg, code: code -> "Result error #{code}: #{msg}"
@@ -331,7 +331,7 @@ defmodule StellarmorphismPhase0Test do
       assert result_analysis == "Result success: completed successfully"
 
       # Test ApiResponse star with SAME core name but DIFFERENT structure
-      api_data = %{__star__: :Success, data: %{user: "alice"}, status: 200}
+      api_data = core(Success, data: %{user: "alice"}, status: 200)
       api_analysis = fission ApiResponse, api_data do
         core Success, data: data, status: status -> "API success #{status}: #{inspect(data)}"
         core Error, message: msg, code: code -> "API error #{code}: #{msg}"
@@ -402,7 +402,7 @@ defmodule Phase0DemoTest do
   use ExUnit.Case, async: true
 
   alias Phase0Demo.Types.{DatabaseResult, HttpResult, FileResult}
-  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3]
+  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3, core: 1, core: 2]
 
   test "Phase 0 allows multiple stars with identical core names" do
     # All three stars have Success and Error cores, but they're completely independent

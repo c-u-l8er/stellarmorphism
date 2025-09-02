@@ -2,29 +2,29 @@
 defmodule Phase1Test.Types do
   use Stellarmorphism
 
-  # Phase 1: Binary Tree (simplified for testing)
+  # Phase 1: Binary Tree (recursive core layers)
   defstar BinaryTree do
     layers do
       core Empty
       core Leaf, value :: any()
       core Node,
-        left :: any(),
-        right :: any(),
+        left :: asteroid(BinaryTree),
+        right :: asteroid(BinaryTree),
         data :: any()
     end
   end
 
-  # Phase 1: Lazy Stream (simplified for testing)
+  # Phase 1: Lazy Stream (recursive core layers)
   defstar LazyStream do
     layers do
       core Empty
       core Cons,
         head :: any(),
-        tail :: any()
+        tail :: rocket(LazyStream)
     end
   end
 
-  # Phase 1: Container (simplified for testing)
+  # Phase 1: Container (recursive core layers)
   defstar Container do
     layers do
       core Empty, capacity :: integer()
@@ -38,7 +38,7 @@ defmodule Phase1Test.Types do
     end
   end
 
-  # Phase 1: Mixed recursion types (simplified for testing)
+  # Phase 1: Mixed recursion types (recursive core layers)
   defstar HybridTree do
     layers do
       core Empty
@@ -47,7 +47,7 @@ defmodule Phase1Test.Types do
         children :: list()
       core LazyNode,
         value :: any(),
-        children :: any()
+        children :: rocket(list())
     end
   end
 
@@ -67,17 +67,16 @@ defmodule Phase1Test do
   alias Phase1Test.Types.{BinaryTree, LazyStream, Container, HybridTree, Vector}
   alias Stellarmorphism.{Types, Recursion}
   require Stellarmorphism.Recursion
-  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3, asteroid: 1, rocket: 1, launch: 1]
+  import Stellarmorphism.DSL, only: [fusion: 3, fission: 3, asteroid: 1, rocket: 1, launch: 1, core: 1, core: 2]
 
   describe "Phase 1: Asteroid recursion (eager evaluation)" do
     test "creates binary tree with eager asteroid recursion" do
       # Build tree with asteroid - all nodes computed immediately
-      tree = %{
-        __star__: :Node,
-        left: asteroid(%{__star__: :Leaf, value: 1}),
-        right: asteroid(%{__star__: :Leaf, value: 3}),
+      tree = core(Node,
+        left: asteroid(core(Leaf, value: 1)),
+        right: asteroid(core(Leaf, value: 3)),
         data: 2
-      }
+      )
 
       # Verify structure is computed immediately
       assert tree[:__star__] == :Node
@@ -98,15 +97,14 @@ defmodule Phase1Test do
 
       get_leaf = fn value ->
         Agent.update(:eval_order, &[{:leaf, value} | &1])
-        %{__star__: :Leaf, value: value}
+        core(Leaf, value: value)
       end
 
-      _tree = %{
-        __star__: :Node,
+      _tree = core(Node,
         left: asteroid(get_leaf.("left")),
         right: asteroid(get_leaf.("right")),
         data: "root"
-      }
+      )
 
       # Verify both children were evaluated immediately
       order = Agent.get(:eval_order, & &1) |> Enum.reverse()
@@ -119,17 +117,15 @@ defmodule Phase1Test do
   describe "Phase 1: Rocket recursion (lazy evaluation)" do
     test "creates lazy stream with rocket recursion" do
       # Build lazy stream - tail computed on demand
-      stream = %{
-        __star__: :Cons,
+      stream = core(Cons,
         head: 1,
         tail: rocket(fn ->
-          %{
-            __star__: :Cons,
+          core(Cons,
             head: 2,
-            tail: rocket(fn -> %{__star__: :Empty} end)
-          }
+            tail: rocket(fn -> core(Empty) end)
+          )
         end)
-      }
+      )
 
       # Verify structure
       assert stream[:__star__] == :Cons
@@ -154,14 +150,13 @@ defmodule Phase1Test do
 
       expensive_computation = fn id ->
         Agent.update(:lazy_eval_order, &[{:computed, id} | &1])
-        %{__star__: :Cons, head: id, tail: rocket(fn -> %{__star__: :Empty} end)}
+        core(Cons, head: id, tail: rocket(fn -> core(Empty) end))
       end
 
-      stream = %{
-        __star__: :Cons,
+      stream = core(Cons,
         head: 0,
         tail: rocket(fn -> expensive_computation.(1) end)
-      }
+      )
 
       # Verify nothing computed yet
       order = Agent.get(:lazy_eval_order, & &1)
@@ -180,19 +175,17 @@ defmodule Phase1Test do
     end
 
     test "deep_launch evaluates all nested rockets" do
-      nested_rockets = %{
-        __star__: :Cons,
+      nested_rockets = core(Cons,
         head: 1,
         tail: rocket(fn ->
-          %{
-            __star__: :Cons,
+          core(Cons,
             head: 2,
             tail: rocket(fn ->
-              %{__star__: :Cons, head: 3, tail: %{__star__: :Empty}}
+              core(Cons, head: 3, tail: core(Empty))
             end)
-          }
+          )
         end)
-      }
+      )
 
       # Deep launch should evaluate all rockets
       fully_evaluated = Recursion.deep_launch(nested_rockets)
@@ -249,26 +242,24 @@ defmodule Phase1Test do
   describe "Phase 1: Mixed asteroid/rocket recursion" do
     test "supports both eager and lazy children in same structure" do
       # Eager node - all children computed immediately
-      eager_tree = %{
-        __star__: :EagerNode,
+      eager_tree = core(EagerNode,
         value: "root",
         children: [
-          asteroid(%{__star__: :EagerNode, value: "child1", children: []}),
-          asteroid(%{__star__: :EagerNode, value: "child2", children: []})
+          asteroid(core(EagerNode, value: "child1", children: [])),
+          asteroid(core(EagerNode, value: "child2", children: []))
         ]
-      }
+      )
 
       # Lazy node - children computed on demand
-      lazy_tree = %{
-        __star__: :LazyNode,
+      lazy_tree = core(LazyNode,
         value: "root",
         children: rocket(fn ->
           [
-            %{__star__: :LazyNode, value: "child1", children: rocket(fn -> [] end)},
-            %{__star__: :LazyNode, value: "child2", children: rocket(fn -> [] end)}
+            core(LazyNode, value: "child1", children: rocket(fn -> [] end)),
+            core(LazyNode, value: "child2", children: rocket(fn -> [] end))
           ]
         end)
-      }
+      )
 
       # Eager access
       eager_children = eager_tree[:children]
@@ -288,8 +279,8 @@ defmodule Phase1Test do
       # This would be enhanced in a full implementation
       # For now, test basic fusion still works
       result = case {:ok, "test_data"} do
-        {:ok, data} -> %{__star__: :Success, value: data}
-        {:error, msg} -> %{__star__: :Error, message: msg}
+        {:ok, data} -> core(Success, value: data)
+        {:error, msg} -> core(Error, message: msg)
       end
 
       assert result[:__star__] == :Success
@@ -298,19 +289,18 @@ defmodule Phase1Test do
 
     test "fission works with parameterized types" do
       # Test fission on parameterized tree structure
-      tree = %{
-        __star__: :Node,
-        left: %{__star__: :Leaf, value: 42},
-        right: %{__star__: :Empty},
+      tree = core(Node,
+        left: core(Leaf, value: 42),
+        right: core(Empty),
         data: "root"
-      }
+      )
 
       result = case tree do
-        %{__star__: :Node, data: data, left: %{__star__: :Leaf, value: val}} ->
+        core(Node, data: data, left: core(Leaf, value: val)) ->
           "Node #{data} with left leaf #{val}"
-        %{__star__: :Leaf, value: val} ->
+        core Leaf, value: val ->
           "Leaf #{val}"
-        %{__star__: :Empty} ->
+        core Empty ->
           "Empty"
       end
 
