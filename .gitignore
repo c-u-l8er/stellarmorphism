@@ -130,3 +130,6 @@ id_ed25519.pub
 *.pid
 *.seed
 *.pid.lock
+
+# Benchmark results
+benchmarks/results/
