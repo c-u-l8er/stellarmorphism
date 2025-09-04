@@ -1,0 +1,473 @@
+Compiling 2 files (.ex)
+Generated stellarmorphism app
+    warning: redefining module Stellarmorphism.RunBenchmarks (current version loaded from _build/dev/lib/stellarmorphism/ebin/Elixir.Stellarmorphism.RunBenchmarks.beam)
+    │
+  1 │ defmodule Stellarmorphism.RunBenchmarks do
+    │ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    │
+    └─ benchmarks/run_benchmarks.ex:1: Stellarmorphism.RunBenchmarks (module)
+
+🌟 Stellarmorphism Performance Benchmark Suite
+===================================================
+Elixir: 1.18.4
+OTP: 27
+Schedulers: 24
+Memory: 56.0MB
+===================================================
+
+⚡ Running Quick Benchmark Suite...
+
+⏱️  Starting: Quick Asteroid vs Rocket
+
+============================================================
+Running Construction Performance: Asteroid vs Rocket
+============================================================
+[MEMORY] BEFORE_Construction Performance: Asteroid vs Rocket: Total=56.24MB, Process=1.15MB
+Benchmark configuration: time=3s, memory_time=0s
+Number of benchmarks: 8
+Starting Benchee.run...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 0 ns
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 28 s
+
+Benchmarking asteroid_tree_depth_5 ...
+Benchmarking asteroid_tree_depth_8 ...
+Benchmarking asteroid_tree_depth_9 ...
+Benchmarking rocket_stream_100 ...
+Benchmarking rocket_stream_1000 ...
+Benchmarking rocket_tree_depth_5 ...
+Benchmarking rocket_tree_depth_8 ...
+Benchmarking rocket_tree_depth_9 ...
+Calculating statistics...
+Formatting results...
+
+Name                            ips        average  deviation         median         99th %
+rocket_tree_depth_8         10.84 M       92.23 ns ±26653.51%          40 ns          90 ns
+rocket_tree_depth_5         10.12 M       98.77 ns ±40850.77%          40 ns          90 ns
+rocket_tree_depth_9         10.02 M       99.78 ns ±41729.99%          40 ns          91 ns
+rocket_stream_1000           8.95 M      111.71 ns ±53142.56%          41 ns         111 ns
+rocket_stream_100            8.17 M      122.38 ns ±46636.73%          41 ns          91 ns
+asteroid_tree_depth_5        1.67 M      597.63 ns  ±8298.31%         452 ns         825 ns
+asteroid_tree_depth_8        0.23 M     4288.98 ns   ±494.79%        3597 ns    14946.56 ns
+asteroid_tree_depth_9       0.120 M     8322.29 ns   ±205.13%        7055 ns       27162 ns
+
+Comparison: 
+rocket_tree_depth_8         10.84 M
+rocket_tree_depth_5         10.12 M - 1.07x slower +6.53 ns
+rocket_tree_depth_9         10.02 M - 1.08x slower +7.54 ns
+rocket_stream_1000           8.95 M - 1.21x slower +19.47 ns
+rocket_stream_100            8.17 M - 1.33x slower +30.14 ns
+asteroid_tree_depth_5        1.67 M - 6.48x slower +505.40 ns
+asteroid_tree_depth_8        0.23 M - 46.50x slower +4196.75 ns
+asteroid_tree_depth_9       0.120 M - 90.23x slower +8230.06 ns
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_comparison.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_rocket_tree_depth_8.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_rocket_tree_depth_5.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_rocket_tree_depth_9.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_rocket_stream_1000.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_rocket_stream_100.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_asteroid_tree_depth_5.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_asteroid_tree_depth_8.html
+Generated benchmarks/results/construction_performance:_asteroid_vs_rocket_asteroid_tree_depth_9.html
+failed to open /dev/dri/renderD128: Permission denied
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+Opened report using xdg-open
+Benchee.run completed
+[MEMORY] AFTER_Construction Performance: Asteroid vs Rocket: Total=1407.48MB, Process=1047.78MB
+
+============================================================
+Running Access Pattern Performance: Immediate vs Lazy
+============================================================
+[MEMORY] BEFORE_Access Pattern Performance: Immediate vs Lazy: Total=1407.59MB, Process=1047.89MB
+Benchmark configuration: time=3s, memory_time=0s
+Number of benchmarks: 4
+Starting Benchee.run...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 0 ns
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 14 s
+
+Benchmarking asteroid_direct_access ...
+Benchmarking rocket_lazy_access ...
+Benchmarking rocket_stream_head_access ...
+Benchmarking rocket_stream_tail_access ...
+Calculating statistics...
+Formatting results...
+
+Name                                ips        average  deviation         median         99th %
+rocket_stream_head_access       27.98 M       35.74 ns  ±1746.19%          30 ns          61 ns
+asteroid_direct_access          10.12 M       98.83 ns ±47640.06%          40 ns          90 ns
+rocket_lazy_access               6.89 M      145.20 ns ±25390.61%          60 ns         221 ns
+rocket_stream_tail_access        6.28 M      159.35 ns ±47878.19%          50 ns         172 ns
+
+Comparison: 
+rocket_stream_head_access       27.98 M
+asteroid_direct_access          10.12 M - 2.77x slower +63.09 ns
+rocket_lazy_access               6.89 M - 4.06x slower +109.46 ns
+rocket_stream_tail_access        6.28 M - 4.46x slower +123.61 ns
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy.html
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy_comparison.html
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy_rocket_stream_head_access.html
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy_asteroid_direct_access.html
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy_rocket_lazy_access.html
+Generated benchmarks/results/access_pattern_performance:_immediate_vs_lazy_rocket_stream_tail_access.html
+failed to open /dev/dri/renderD128: Permission denied
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+Opened report using xdg-open
+Benchee.run completed
+[MEMORY] AFTER_Access Pattern Performance: Immediate vs Lazy: Total=2621.77MB, Process=2381.8MB
+✅ Completed: Quick Asteroid vs Rocket (908.61s)
+
+⏱️  Starting: Quick Concurrency
+
+============================================================
+Running Concurrent Construction Performance
+============================================================
+[MEMORY] BEFORE_Concurrent Construction Performance: Total=2621.9MB, Process=2381.91MB
+Benchmark configuration: time=3s, memory_time=0s
+Number of benchmarks: 36
+Starting Benchee.run...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 0 ns
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 2 min 6 s
+
+Benchmarking rocket_trees_1p_small ...
+Benchmarking rocket_trees_8p_large ...
+Benchmarking asteroid_trees_8p_large ...
+Benchmarking asteroid_trees_4p_large ...
+Benchmarking rocket_trees_32p_medium ...
+Benchmarking rocket_trees_16p_large ...
+Benchmarking rocket_trees_1p_large ...
+Benchmarking asteroid_trees_4p_small ...
+Benchmarking rocket_trees_8p_small ...
+Benchmarking asteroid_trees_2p_medium ...
+Benchmarking asteroid_trees_2p_large ...
+Benchmarking asteroid_trees_8p_medium ...
+Benchmarking rocket_trees_1p_medium ...
+Benchmarking asteroid_trees_8p_small ...
+Benchmarking asteroid_trees_1p_large ...
+Benchmarking rocket_trees_4p_medium ...
+Benchmarking asteroid_trees_16p_large ...
+Benchmarking rocket_trees_4p_small ...
+Benchmarking asteroid_trees_32p_small ...
+Benchmarking asteroid_trees_1p_medium ...
+Benchmarking asteroid_trees_16p_small ...
+Benchmarking rocket_trees_32p_small ...
+Benchmarking asteroid_trees_4p_medium ...
+Benchmarking rocket_trees_2p_medium ...
+Benchmarking rocket_trees_16p_small ...
+Benchmarking rocket_trees_16p_medium ...
+Benchmarking asteroid_trees_32p_medium ...
+Benchmarking rocket_trees_8p_medium ...
+Benchmarking asteroid_trees_32p_large ...
+Benchmarking rocket_trees_32p_large ...
+Benchmarking rocket_trees_2p_large ...
+Benchmarking asteroid_trees_1p_small ...
+Benchmarking rocket_trees_2p_small ...
+Benchmarking asteroid_trees_2p_small ...
+Benchmarking asteroid_trees_16p_medium ...
+Benchmarking rocket_trees_4p_large ...
+Calculating statistics...
+Formatting results...
+
+Name                                ips        average  deviation         median         99th %
+rocket_trees_1p_small           24.14 K       41.43 μs   ±175.72%       30.43 μs      156.75 μs
+rocket_trees_4p_small           16.94 K       59.05 μs    ±87.30%       43.58 μs      231.41 μs
+rocket_trees_2p_small           15.88 K       62.99 μs    ±84.71%       44.77 μs      242.77 μs
+rocket_trees_8p_small           11.50 K       86.97 μs    ±78.71%       70.81 μs      284.81 μs
+rocket_trees_16p_small           7.93 K      126.18 μs    ±61.03%      108.47 μs      372.77 μs
+rocket_trees_1p_medium           6.70 K      149.24 μs    ±77.37%      134.31 μs      398.29 μs
+rocket_trees_2p_medium           5.16 K      193.86 μs   ±115.91%      163.91 μs      565.63 μs
+rocket_trees_32p_small           4.79 K      208.77 μs    ±41.31%      188.53 μs      495.82 μs
+rocket_trees_4p_medium           3.86 K      258.78 μs   ±109.28%      222.86 μs      790.68 μs
+rocket_trees_16p_medium          3.67 K      272.41 μs    ±51.92%      241.30 μs      770.03 μs
+rocket_trees_8p_medium           3.12 K      320.82 μs    ±47.04%      289.31 μs      826.31 μs
+rocket_trees_1p_large            2.97 K      336.18 μs    ±37.18%      304.98 μs      817.73 μs
+rocket_trees_2p_large            2.74 K      364.37 μs    ±54.59%      330.10 μs      863.39 μs
+rocket_trees_8p_large            2.63 K      380.64 μs    ±36.92%      356.74 μs      870.49 μs
+rocket_trees_4p_large            2.58 K      387.01 μs    ±36.52%      360.18 μs      860.54 μs
+rocket_trees_32p_medium          2.50 K      399.44 μs    ±39.77%      374.65 μs      859.51 μs
+rocket_trees_16p_large           2.21 K      452.04 μs    ±39.11%      435.19 μs     1048.90 μs
+rocket_trees_32p_large           1.31 K      761.05 μs    ±28.70%      743.12 μs     1415.74 μs
+asteroid_trees_16p_small         1.21 K      825.16 μs    ±38.28%      705.44 μs     1805.34 μs
+asteroid_trees_8p_small          1.17 K      858.13 μs    ±31.26%      785.90 μs     1643.53 μs
+asteroid_trees_32p_small         1.04 K      957.53 μs    ±40.20%      836.45 μs     2307.25 μs
+asteroid_trees_4p_small          0.99 K     1014.70 μs    ±41.29%      923.24 μs     2181.93 μs
+asteroid_trees_2p_small          0.79 K     1265.40 μs    ±50.30%     1145.50 μs     2938.55 μs
+asteroid_trees_1p_small          0.62 K     1611.12 μs    ±28.90%     1436.77 μs     3282.19 μs
+asteroid_trees_32p_medium        0.32 K     3173.44 μs    ±40.36%     3501.05 μs     5944.74 μs
+asteroid_trees_16p_medium        0.29 K     3402.19 μs    ±32.46%     3479.25 μs     6852.95 μs
+asteroid_trees_8p_medium         0.28 K     3516.75 μs    ±31.28%     3490.72 μs     7164.27 μs
+asteroid_trees_4p_medium         0.25 K     4059.21 μs    ±29.86%     3887.93 μs     7963.31 μs
+asteroid_trees_16p_large        0.177 K     5656.36 μs    ±34.14%     5993.37 μs    10634.08 μs
+asteroid_trees_2p_medium        0.140 K     7160.45 μs    ±21.31%     7012.70 μs    12306.12 μs
+asteroid_trees_32p_large        0.134 K     7472.60 μs    ±32.82%     7521.04 μs    15252.86 μs
+asteroid_trees_8p_large         0.133 K     7528.55 μs    ±44.10%     7212.22 μs    21019.65 μs
+asteroid_trees_1p_medium       0.0999 K    10010.42 μs    ±19.05%     9697.75 μs    15729.49 μs
+asteroid_trees_4p_large        0.0832 K    12018.73 μs    ±50.99%    11682.80 μs    44213.64 μs
+asteroid_trees_2p_large        0.0581 K    17211.52 μs    ±21.67%    17117.87 μs    39565.47 μs
+asteroid_trees_1p_large        0.0338 K    29542.37 μs    ±14.92%    28956.69 μs    47709.73 μs
+
+Comparison: 
+rocket_trees_1p_small           24.14 K
+rocket_trees_4p_small           16.94 K - 1.43x slower +17.62 μs
+rocket_trees_2p_small           15.88 K - 1.52x slower +21.56 μs
+rocket_trees_8p_small           11.50 K - 2.10x slower +45.54 μs
+rocket_trees_16p_small           7.93 K - 3.05x slower +84.75 μs
+rocket_trees_1p_medium           6.70 K - 3.60x slower +107.81 μs
+rocket_trees_2p_medium           5.16 K - 4.68x slower +152.43 μs
+rocket_trees_32p_small           4.79 K - 5.04x slower +167.34 μs
+rocket_trees_4p_medium           3.86 K - 6.25x slower +217.35 μs
+rocket_trees_16p_medium          3.67 K - 6.57x slower +230.98 μs
+rocket_trees_8p_medium           3.12 K - 7.74x slower +279.39 μs
+rocket_trees_1p_large            2.97 K - 8.11x slower +294.75 μs
+rocket_trees_2p_large            2.74 K - 8.79x slower +322.94 μs
+rocket_trees_8p_large            2.63 K - 9.19x slower +339.21 μs
+rocket_trees_4p_large            2.58 K - 9.34x slower +345.58 μs
+rocket_trees_32p_medium          2.50 K - 9.64x slower +358.00 μs
+rocket_trees_16p_large           2.21 K - 10.91x slower +410.61 μs
+rocket_trees_32p_large           1.31 K - 18.37x slower +719.62 μs
+asteroid_trees_16p_small         1.21 K - 19.92x slower +783.73 μs
+asteroid_trees_8p_small          1.17 K - 20.71x slower +816.69 μs
+asteroid_trees_32p_small         1.04 K - 23.11x slower +916.09 μs
+asteroid_trees_4p_small          0.99 K - 24.49x slower +973.27 μs
+asteroid_trees_2p_small          0.79 K - 30.54x slower +1223.97 μs
+asteroid_trees_1p_small          0.62 K - 38.89x slower +1569.69 μs
+asteroid_trees_32p_medium        0.32 K - 76.60x slower +3132.01 μs
+asteroid_trees_16p_medium        0.29 K - 82.12x slower +3360.76 μs
+asteroid_trees_8p_medium         0.28 K - 84.88x slower +3475.32 μs
+asteroid_trees_4p_medium         0.25 K - 97.97x slower +4017.78 μs
+asteroid_trees_16p_large        0.177 K - 136.52x slower +5614.93 μs
+asteroid_trees_2p_medium        0.140 K - 172.83x slower +7119.02 μs
+asteroid_trees_32p_large        0.134 K - 180.36x slower +7431.16 μs
+asteroid_trees_8p_large         0.133 K - 181.71x slower +7487.12 μs
+asteroid_trees_1p_medium       0.0999 K - 241.62x slower +9968.99 μs
+asteroid_trees_4p_large        0.0832 K - 290.09x slower +11977.30 μs
+asteroid_trees_2p_large        0.0581 K - 415.42x slower +17170.08 μs
+asteroid_trees_1p_large        0.0338 K - 713.05x slower +29500.94 μs
+Generated benchmarks/results/concurrent_construction_performance.html
+Generated benchmarks/results/concurrent_construction_performance_comparison.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_1p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_4p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_2p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_8p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_16p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_1p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_2p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_32p_small.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_4p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_16p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_8p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_1p_large.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_2p_large.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_8p_large.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_4p_large.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_32p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_16p_large.html
+Generated benchmarks/results/concurrent_construction_performance_rocket_trees_32p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_16p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_8p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_32p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_4p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_2p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_1p_small.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_32p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_16p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_8p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_4p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_16p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_2p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_32p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_8p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_1p_medium.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_4p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_2p_large.html
+Generated benchmarks/results/concurrent_construction_performance_asteroid_trees_1p_large.html
+failed to open /dev/dri/renderD128: Permission denied
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+Opened report using xdg-open
+Benchee.run completed
+[MEMORY] AFTER_Concurrent Construction Performance: Total=2632.23MB, Process=2382.05MB
+✅ Completed: Quick Concurrency (136.44s)
+
+⏱️  Starting: Quick Scale
+
+============================================================
+Running Tree Scale Performance: Construction
+============================================================
+[MEMORY] BEFORE_Tree Scale Performance: Construction: Total=2632.45MB, Process=2382.16MB
+Benchmark configuration: time=3s, memory_time=0s
+Number of benchmarks: 8
+Starting Benchee.run...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 0 ns
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 28 s
+
+Benchmarking asteroid_tree_depth_3 ...
+Benchmarking asteroid_tree_depth_5 ...
+Benchmarking asteroid_tree_depth_7 ...
+Benchmarking asteroid_tree_depth_9 ...
+Benchmarking rocket_tree_depth_3 ...
+Benchmarking rocket_tree_depth_5 ...
+Benchmarking rocket_tree_depth_7 ...
+Benchmarking rocket_tree_depth_9 ...
+Calculating statistics...
+Formatting results...
+
+Name                            ips        average  deviation         median         99th %
+rocket_tree_depth_9         10.23 M       97.74 ns ±39205.36%          40 ns         101 ns
+rocket_tree_depth_7          9.92 M      100.80 ns ±36288.19%          40 ns          91 ns
+rocket_tree_depth_5          7.30 M      136.97 ns ±50606.28%          40 ns         101 ns
+rocket_tree_depth_3          6.60 M      151.43 ns ±47387.13%          40 ns         100 ns
+asteroid_tree_depth_3        4.46 M      224.36 ns ±22608.12%         131 ns         313 ns
+asteroid_tree_depth_5        1.11 M      901.11 ns ±23835.91%         441 ns         922 ns
+asteroid_tree_depth_7        0.47 M     2118.88 ns   ±900.63%        1716 ns        3770 ns
+asteroid_tree_depth_9       0.120 M     8358.38 ns   ±180.64%        7000 ns       27680 ns
+
+Comparison: 
+rocket_tree_depth_9         10.23 M
+rocket_tree_depth_7          9.92 M - 1.03x slower +3.06 ns
+rocket_tree_depth_5          7.30 M - 1.40x slower +39.23 ns
+rocket_tree_depth_3          6.60 M - 1.55x slower +53.69 ns
+asteroid_tree_depth_3        4.46 M - 2.30x slower +126.62 ns
+asteroid_tree_depth_5        1.11 M - 9.22x slower +803.38 ns
+asteroid_tree_depth_7        0.47 M - 21.68x slower +2021.14 ns
+asteroid_tree_depth_9       0.120 M - 85.52x slower +8260.64 ns
+Generated benchmarks/results/tree_scale_performance:_construction.html
+Generated benchmarks/results/tree_scale_performance:_construction_comparison.html
+Generated benchmarks/results/tree_scale_performance:_construction_rocket_tree_depth_9.html
+Generated benchmarks/results/tree_scale_performance:_construction_rocket_tree_depth_7.html
+Generated benchmarks/results/tree_scale_performance:_construction_rocket_tree_depth_5.html
+Generated benchmarks/results/tree_scale_performance:_construction_rocket_tree_depth_3.html
+Generated benchmarks/results/tree_scale_performance:_construction_asteroid_tree_depth_3.html
+Generated benchmarks/results/tree_scale_performance:_construction_asteroid_tree_depth_5.html
+Generated benchmarks/results/tree_scale_performance:_construction_asteroid_tree_depth_7.html
+Generated benchmarks/results/tree_scale_performance:_construction_asteroid_tree_depth_9.html
+failed to open /dev/dri/renderD128: Permission denied
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+Opened report using xdg-open
+Benchee.run completed
+[MEMORY] AFTER_Tree Scale Performance: Construction: Total=2051.92MB, Process=1711.79MB
+
+============================================================
+Running Tree Scale Performance: Traversal
+============================================================
+[MEMORY] BEFORE_Tree Scale Performance: Traversal: Total=2051.99MB, Process=1711.87MB
+Benchmark configuration: time=3s, memory_time=0s
+Number of benchmarks: 6
+Starting Benchee.run...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 0 ns
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 21 s
+
+Benchmarking traverse_asteroid_depth_3 ...
+Benchmarking traverse_asteroid_depth_5 ...
+Benchmarking traverse_asteroid_depth_7 ...
+Benchmarking traverse_rocket_depth_3 ...
+Benchmarking traverse_rocket_depth_5 ...
+Benchmarking traverse_rocket_depth_7 ...
+Calculating statistics...
+Formatting results...
+
+Name                                ips        average  deviation         median         99th %
+traverse_asteroid_depth_3        7.16 M       0.140 μs ±32721.18%      0.0890 μs        0.27 μs
+traverse_rocket_depth_3          3.21 M        0.31 μs ±14606.00%       0.191 μs        0.47 μs
+traverse_asteroid_depth_5        2.42 M        0.41 μs  ±6017.91%        0.31 μs        0.77 μs
+traverse_rocket_depth_5          0.98 M        1.02 μs  ±1520.21%        0.73 μs        1.83 μs
+traverse_asteroid_depth_7        0.70 M        1.43 μs  ±1077.34%        1.19 μs        2.86 μs
+traverse_rocket_depth_7          0.27 M        3.73 μs   ±362.74%        3.08 μs       10.88 μs
+
+Comparison: 
+traverse_asteroid_depth_3        7.16 M
+traverse_rocket_depth_3          3.21 M - 2.23x slower +0.172 μs
+traverse_asteroid_depth_5        2.42 M - 2.95x slower +0.27 μs
+traverse_rocket_depth_5          0.98 M - 7.33x slower +0.88 μs
+traverse_asteroid_depth_7        0.70 M - 10.26x slower +1.29 μs
+traverse_rocket_depth_7          0.27 M - 26.69x slower +3.59 μs
+Generated benchmarks/results/tree_scale_performance:_traversal.html
+Generated benchmarks/results/tree_scale_performance:_traversal_comparison.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_asteroid_depth_3.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_rocket_depth_3.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_asteroid_depth_5.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_rocket_depth_5.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_asteroid_depth_7.html
+Generated benchmarks/results/tree_scale_performance:_traversal_traverse_rocket_depth_7.html
+failed to open /dev/dri/renderD128: Permission denied
+libEGL warning: DRI3 error: Could not get DRI3 device
+libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering
+Opened report using xdg-open
+Benchee.run completed
+[MEMORY] AFTER_Tree Scale Performance: Traversal: Total=1936.29MB, Process=1711.76MB
+✅ Completed: Quick Scale (141.58s)
+
+✅ Quick Benchmark Suite Complete!
+Total execution time: 1186.63 seconds

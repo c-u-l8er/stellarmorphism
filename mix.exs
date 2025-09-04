@@ -6,6 +6,7 @@ defmodule Stellarmorphism.MixProject do
       app: :stellarmorphism,
       version: "0.1.0",
       elixir: "~> 1.15",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: "Stellar-themed ADT DSL: defplanet/defstar with fusion/fission",
       source_url: "https://github.com/your-org/stellarmorphism",
@@ -16,6 +17,11 @@ defmodule Stellarmorphism.MixProject do
     ]
   end
 
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:dev), do: ["lib", "benchmarks"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   def application do
     [
       extra_applications: [:logger]
@@ -24,7 +30,9 @@ defmodule Stellarmorphism.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:benchee, "~> 1.0", only: :dev},
+      {:benchee_html, "~> 1.0", only: :dev}
     ]
   end
 

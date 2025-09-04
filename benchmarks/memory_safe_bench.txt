@@ -1,0 +1,167 @@
+    warning: redefining module Stellarmorphism.MemorySafeBench (current version loaded from _build/dev/lib/stellarmorphism/ebin/Elixir.Stellarmorphism.MemorySafeBench.beam)
+    │
+  1 │ defmodule Stellarmorphism.MemorySafeBench do
+    │ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    │
+    └─ benchmarks/memory_safe_bench.ex:1: Stellarmorphism.MemorySafeBench (module)
+
+🛡️  Stellarmorphism Memory-Safe Benchmark Suite
+===================================================
+Conservative limits to prevent out-of-memory conditions
+System Memory: 55.9MB
+Schedulers: 24
+Max Tree Depth: 8 (256 nodes)
+===================================================
+
+🛡️  Running Memory-Safe Benchmark Suite...
+
+📊 Safe Construction Performance Test
+----------------------------------------------
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 3 s
+memory time: 2 s
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 38 s 500 ms
+
+Benchmarking asteroid_tree_depth_3 ...
+Benchmarking asteroid_tree_depth_5 ...
+Benchmarking asteroid_tree_depth_7 ...
+Benchmarking plain_map_structure ...
+Benchmarking rocket_tree_depth_3 ...
+Benchmarking rocket_tree_depth_5 ...
+Benchmarking rocket_tree_depth_7 ...
+Calculating statistics...
+Formatting results...
+
+Name                            ips        average  deviation         median         99th %
+plain_map_structure         30.29 M       33.01 ns  ±1284.89%          30 ns          60 ns
+rocket_tree_depth_5         11.22 M       89.11 ns ±53418.71%          40 ns          80 ns
+rocket_tree_depth_7         10.56 M       94.69 ns ±55925.67%          40 ns          71 ns
+rocket_tree_depth_3          9.84 M      101.66 ns ±64401.99%          39 ns          70 ns
+asteroid_tree_depth_3        6.48 M      154.32 ns ±37006.76%          70 ns         200 ns
+asteroid_tree_depth_5        3.66 M      272.99 ns ±11432.77%         180 ns         511 ns
+asteroid_tree_depth_7        1.17 M      855.21 ns  ±2375.74%         623 ns        1669 ns
+
+Comparison: 
+plain_map_structure         30.29 M
+rocket_tree_depth_5         11.22 M - 2.70x slower +56.09 ns
+rocket_tree_depth_7         10.56 M - 2.87x slower +61.67 ns
+rocket_tree_depth_3          9.84 M - 3.08x slower +68.65 ns
+asteroid_tree_depth_3        6.48 M - 4.67x slower +121.31 ns
+asteroid_tree_depth_5        3.66 M - 8.27x slower +239.98 ns
+asteroid_tree_depth_7        1.17 M - 25.90x slower +822.20 ns
+
+Memory usage statistics:
+
+Name                     Memory usage
+plain_map_structure               0 B
+rocket_tree_depth_5             168 B - ∞ x memory usage +168 B
+rocket_tree_depth_7             168 B - ∞ x memory usage +168 B
+rocket_tree_depth_3             168 B - ∞ x memory usage +168 B
+asteroid_tree_depth_3           392 B - ∞ x memory usage +392 B
+asteroid_tree_depth_5          1736 B - ∞ x memory usage +1736 B
+asteroid_tree_depth_7          7112 B - ∞ x memory usage +7112 B
+
+**All measurements for memory usage were the same**
+
+📊 Safe Memory Usage Test
+------------------------------------
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 500 ms
+time: 2 s
+memory time: 1 s
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 21 s
+
+Benchmarking asteroid_memory_depth_3 ...
+Benchmarking asteroid_memory_depth_5 ...
+Benchmarking asteroid_memory_depth_7 ...
+Benchmarking rocket_memory_depth_3 ...
+Benchmarking rocket_memory_depth_5 ...
+Benchmarking rocket_memory_depth_7 ...
+Calculating statistics...
+Formatting results...
+
+Name                              ips        average  deviation         median         99th %
+rocket_memory_depth_5         13.53 K       73.90 μs    ±74.99%       66.34 μs      206.74 μs
+asteroid_memory_depth_3       13.49 K       74.15 μs    ±80.28%       65.23 μs      199.48 μs
+rocket_memory_depth_7         13.44 K       74.41 μs    ±83.84%       67.54 μs      218.65 μs
+asteroid_memory_depth_5       13.39 K       74.68 μs    ±83.83%       65.33 μs      234.85 μs
+rocket_memory_depth_3         13.36 K       74.84 μs    ±87.37%       67.62 μs      221.58 μs
+asteroid_memory_depth_7       12.93 K       77.33 μs  ±1094.36%       65.56 μs      205.21 μs
+
+Comparison: 
+rocket_memory_depth_5         13.53 K
+asteroid_memory_depth_3       13.49 K - 1.00x slower +0.25 μs
+rocket_memory_depth_7         13.44 K - 1.01x slower +0.51 μs
+asteroid_memory_depth_5       13.39 K - 1.01x slower +0.78 μs
+rocket_memory_depth_3         13.36 K - 1.01x slower +0.94 μs
+asteroid_memory_depth_7       12.93 K - 1.05x slower +3.42 μs
+
+Memory usage statistics:
+
+Name                       Memory usage
+rocket_memory_depth_5             240 B
+asteroid_memory_depth_3           464 B - 1.93x memory usage +224 B
+rocket_memory_depth_7             240 B - 1.00x memory usage +0 B
+asteroid_memory_depth_5          1808 B - 7.53x memory usage +1568 B
+rocket_memory_depth_3             240 B - 1.00x memory usage +0 B
+asteroid_memory_depth_7          7184 B - 29.93x memory usage +6944 B
+
+**All measurements for memory usage were the same**
+
+📊 Progressive Scale Test (with safety checks)
+--------------------------------------------------------
+
+Testing depth 3 (8 nodes, ~1.6KB)
+  Asteroid: 0.0ms
+  Rocket:   0.0ms
+  Memory delta: 0B / -1326257520B
+
+Testing depth 4 (16 nodes, ~3.1KB)
+  Asteroid: 0.0ms
+  Rocket:   0.0ms
+  Memory delta: 0B / -160B
+
+Testing depth 5 (32 nodes, ~6.3KB)
+  Asteroid: 0.01ms
+  Rocket:   0.0ms
+  Memory delta: 17.2KB / -17672B
+
+Testing depth 6 (64 nodes, ~12.5KB)
+  Asteroid: 0.01ms
+  Rocket:   0.0ms
+  Memory delta: 17.2KB / -17672B
+
+Testing depth 7 (128 nodes, ~25.0KB)
+  Asteroid: 0.01ms
+  Rocket:   0.0ms
+  Memory delta: 17.2KB / -12784B
+
+Testing depth 8 (256 nodes, ~50.0KB)
+  Asteroid: 0.01ms
+  Rocket:   0.0ms
+  Memory delta: 27.8KB / -33480B
+
+✅ Memory-safe benchmarks completed!

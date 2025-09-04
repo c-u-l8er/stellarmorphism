@@ -1,0 +1,92 @@
+    warning: redefining module Stellarmorphism.SimpleBenchmark (current version loaded from _build/dev/lib/stellarmorphism/ebin/Elixir.Stellarmorphism.SimpleBenchmark.beam)
+    │
+  1 │ defmodule Stellarmorphism.SimpleBenchmark do
+    │ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    │
+    └─ benchmarks/simple_benchmark.ex:1: Stellarmorphism.SimpleBenchmark (module)
+
+
+🧪 Running Simple Benchmark Test...
+
+📊 Testing Construction Performance...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 100 ms
+time: 1 s
+memory time: 500 ms
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 4 s 800 ms
+
+Benchmarking basic_map_structure ...
+Benchmarking small_asteroid_tree ...
+Benchmarking small_rocket_tree ...
+Calculating statistics...
+Formatting results...
+
+Name                          ips        average  deviation         median         99th %
+basic_map_structure       30.66 M       32.62 ns   ±951.32%          30 ns          60 ns
+small_rocket_tree         16.33 M       61.25 ns ±20229.21%          40 ns          70 ns
+small_asteroid_tree        7.28 M      137.45 ns ±13815.07%          60 ns         209 ns
+
+Comparison: 
+basic_map_structure       30.66 M
+small_rocket_tree         16.33 M - 1.88x slower +28.63 ns
+small_asteroid_tree        7.28 M - 4.21x slower +104.83 ns
+
+Memory usage statistics:
+
+Name                   Memory usage
+basic_map_structure             0 B
+small_rocket_tree             168 B - ∞ x memory usage +168 B
+small_asteroid_tree           392 B - ∞ x memory usage +392 B
+
+**All measurements for memory usage were the same**
+
+📊 Testing Access Performance...
+Operating System: Linux
+CPU Information: AMD Ryzen AI 9 HX 370 w
+Number of Available Cores: 24
+Available memory: 15.18 GB
+Elixir 1.18.4
+Erlang 27.3.4.2
+JIT enabled: true
+
+Benchmark suite executing with the following configuration:
+warmup: 100 ms
+time: 1 s
+memory time: 500 ms
+reduction time: 0 ns
+parallel: 1
+inputs: none specified
+Estimated total run time: 3 s 200 ms
+
+Benchmarking asteroid_access ...
+Benchmarking rocket_access ...
+Calculating statistics...
+Formatting results...
+
+Name                      ips        average  deviation         median         99th %
+asteroid_access       13.80 M       72.46 ns ±37507.26%          40 ns          71 ns
+rocket_access          8.72 M      114.70 ns ±20531.98%          50 ns         110 ns
+
+Comparison: 
+asteroid_access       13.80 M
+rocket_access          8.72 M - 1.58x slower +42.24 ns
+
+Memory usage statistics:
+
+Name               Memory usage
+asteroid_access            24 B
+rocket_access             192 B - 8.00x memory usage +168 B
+
+**All measurements for memory usage were the same**
+✅ Simple benchmark test completed successfully!
