@@ -1,8 +1,8 @@
-# GeoFleetic Demo: Stellar Fleet Management System 🚀
+# Stellarmorphism Demo: Efficient Algebraic Data Types 🚀
 
 ## Overview
 
-This demo showcases **GeoFleetic** - a complete fleet management system built on Stellarmorphism that outperforms tile38 and hivekit. The demo includes delivery services, ride-sharing, emergency response, and logistics operations with real-time tracking, intelligent dispatch, and GPU-accelerated analytics.
+This demo showcases **Stellarmorphism** - an efficient algebraic data type library for Elixir with stellar-themed syntax. The demo illustrates practical applications in fleet management scenarios, demonstrating type-safe pattern matching, efficient lazy evaluation, and performance characteristics of asteroid vs rocket recursion patterns.
 
 ## 🌟 Demo Scenarios
 
@@ -34,27 +34,18 @@ This demo showcases **GeoFleetic** - a complete fleet management system built on
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    GeoFleetic Demo Stack                       │
+│               Stellarmorphism Implementation                  │
 ├─────────────────────────────────────────────────────────────┤
-│  Phase 4: GPU Analytics     │  Real-time ML Predictions     │
-│  • Nx Tensors              │  • Demand Forecasting         │
-│  • GPU Route Optimization  │  • Maintenance Alerts         │
-│  • Massive Scale Analytics │  • Traffic Pattern Learning   │
+│  Phase 1: Core ADT Library │  Production-Ready Foundation    │
+│  • defplanet/defstar      │  • Type-safe Constructs         │
+│  • Asteroid/Rocket        │  • Fusion/Fission Pattern Match │
+│  • Parameterized Types    │  • Registry Management          │
+│  • Memory-Safe Recursion  │  • Comprehensive Benchmarks     │
 ├─────────────────────────────────────────────────────────────┤
-│  Phase 3: Real-time Engine │  WebSocket Streaming          │
-│  • Phoenix Channels        │  • Live Dashboards            │
-│  • Smart Geofencing       │  • Event Broadcasting         │
-│  • Fleet Orchestration    │  • Sub-second Updates         │
-├─────────────────────────────────────────────────────────────┤
-│  Phase 2: PostGIS Storage  │  Spatial Database             │
-│  • Persistent Stellar Types│  • Geographic Queries         │
-│  • Automatic Migrations   │  • Spatial Indexing           │
-│  • Type-safe Persistence  │  • Database Triggers           │
-├─────────────────────────────────────────────────────────────┤
-│  Phase 1: Stellar Types   │  Stellarmorphism Foundation    │
-│  • defplanet/defstar      │  • Type-safe Constructs       │
-│  • Asteroid/Rocket        │  • Fusion/Fission             │
-│  • Enhanced Constructors  │  • Registry Management         │
+│  Future Phases: Fleet Features │  Optional Extensions         │
+│  • PostGIS Integration    │  • Real-time WebSocket         │
+│  • GPU Acceleration       │  • Advanced Analytics          │
+│  • Fleet Orchestration    │  • Spatial Operations          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -62,97 +53,90 @@ This demo showcases **GeoFleetic** - a complete fleet management system built on
 
 ### Prerequisites
 - Elixir 1.15+
-- PostgreSQL 14+ with PostGIS extension
-- NVIDIA GPU (optional, for Phase 4 features)
-- Node.js 18+ (for dashboard frontend)
+- No external dependencies required for core functionality
+- PostgreSQL + PostGIS (optional, for future fleet features)
+- Node.js (optional, for dashboard frontend)
 
 ### Setup
 
 ```bash
 # Clone and setup
 git clone https://github.com/your-org/stellarmorphism
-cd stellarmorphism/examples/geofleetic_demo
+cd stellarmorphism
 
 # Install dependencies
 mix deps.get
-npm install --prefix assets
 
-# Setup database
-mix ecto.create
-mix ecto.migrate
+# Run benchmarks to see performance characteristics
+mix run benchmarks/memory_safe_bench.ex
 
-# Seed demo data
-mix run priv/repo/seeds.exs
+# Run tests
+mix test
 
-# Start the application
-mix phx.server
+# Explore examples
+mix run examples/
 ```
 
-### Demo Dashboard
+### Demo Examples
 
-Visit `http://localhost:4000` to see:
+Explore the examples to see Stellarmorphism in action:
 
-- **Live Fleet Map**: Real-time vehicle positions with stellar-powered updates
-- **Analytics Dashboard**: GPU-accelerated insights and predictions  
-- **Dispatch Console**: Intelligent vehicle assignment and routing
-- **Performance Metrics**: Competitive benchmarks vs tile38/hivekit
+- **Type-Safe Pattern Matching**: See fission/fusion with stellar syntax
+- **Recursion Patterns**: Compare asteroid (eager) vs rocket (lazy) evaluation
+- **Performance Benchmarks**: Run comprehensive performance tests
+- **Memory Analysis**: Understand memory usage patterns
+- **Concurrent Operations**: Test scalability across process counts
 
 ## 📊 Performance Benchmarks
 
-### GeoFleetic vs Competitors
+### Stellarmorphism Performance Characteristics
 
-| Operation | GeoFleetic GPU | Tile38 | HiveKit | PostGIS Only |
-|-----------|--------------|---------|---------|--------------|
-| 10K distance matrix | **12.5ms** | 156ms | N/A | 1,205ms |
-| Geofence checking | **8.2ms** | 89ms | Basic | 432ms |
-| Route optimization | **157ms** | N/A | N/A | 12,847ms |
-| Real-time updates | **<50ms** | <100ms | <200ms | <500ms |
+| Operation | Rockets (Lazy) | Asteroids (Eager) | Plain Elixir |
+|-----------|----------------|-------------------|--------------|
+| Tree construction (depth 5) | **11.22M ops/sec** | 1.67M ops/sec | 30.29M ops/sec |
+| Tree construction (depth 9) | **10.02M ops/sec** | 0.12M ops/sec | 30.29M ops/sec |
+| Stream head access | **27.98M ops/sec** | N/A | N/A |
+| Direct field access | 10.12M ops/sec | **13.80M ops/sec** | N/A |
+| Memory usage (depth 7) | **168B constant** | 7,112B | 0B |
 
-**GeoFleetic is 10-100x faster while providing persistent storage and type safety!**
+**Stellarmorphism provides efficient ADT patterns with clear performance trade-offs between eager and lazy evaluation strategies.**
 
 ## 🎯 Demo Highlights
 
-### Type-Safe Fleet Operations
+### Type-Safe ADT Operations
 ```elixir
-# Stellar types prevent data corruption
-vehicle = core Active,
-  operational_mode: :driving,
-  driver_id: "driver_123",
-  location: %Geometry.Point{coordinates: {-73.9857, 40.7484}}
+# Stellar types provide compile-time safety
+result = fission TestTypes.Result, api_response do
+  core Success, data: data -> {:ok, data}
+  core Error, message: msg -> {:error, msg}
+end
 
-# GPU-accelerated spatial queries  
-nearby = GeoFleetic.GpuAccelerated.vehicles_within_radius_gpu(
-  all_vehicles, 
-  emergency_location, 
-  5.0  # 5km radius
-)
+# Efficient lazy evaluation with rockets
+fibonacci_stream = core Cons,
+  head: 0,
+  tail: rocket(fn -> next_fibonacci() end)
+
+# Direct access with asteroids
+tree = core Node,
+  value: 42,
+  left: asteroid(core Leaf, value: 1),
+  right: asteroid(core Leaf, value: 3)
 ```
 
-### Real-Time Event Streaming
+### Performance Characteristics
 ```elixir
-# Automatic geofence breach detection
-breach_event = core GeofenceBreach,
-  vehicle_id: "delivery_001",
-  geofence_id: "pizza_zone_downtown", 
-  breach_type: :entry,
-  timestamp: DateTime.utc_now()
-
-# Broadcast to live dashboard
-Phoenix.PubSub.broadcast(GeoFleetic.PubSub, "fleet_events", breach_event)
+# Rockets excel at construction and memory efficiency
+# Asteroids excel at direct access patterns
+# Choose based on your use case requirements
 ```
 
-### Intelligent Dispatch
+### Pattern Matching
 ```elixir
-# Find optimal vehicle assignment
-request = core EmergencyRequest,
-  location: emergency_coords,
-  emergency_type: :medical,
-  severity: 4
-
-{:ok, best_vehicle} = GeoFleetic.DispatchEngine.find_best_vehicle(
-  request, 
-  available_ambulances
-)
+# Type-safe pattern matching with stellar syntax
+response = fusion TestTypes.ApiResponse, http_result do
+  {:ok, data, status} -> core Success, data: data, status: status
+  {:error, reason} -> core Error, message: reason, code: 500
+end
 ```
 
 ## 📱 Demo Scenarios
@@ -359,4 +343,4 @@ We welcome contributions to the GeoFleetic demo! Areas of focus:
 
 ---
 
-**GeoFleetic Demo**: Where stellar types meet real-world fleet management! 🌟🚚✨
+**Stellarmorphism Demo**: Where stellar types meet efficient Elixir development! 🌟🚀✨
